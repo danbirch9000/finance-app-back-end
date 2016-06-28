@@ -1,0 +1,29 @@
+{
+    "savings":{
+        "total-savings": 23000,
+        "savings-accounts": [
+        {
+            "id": 1,
+            "name" : "Barclays ISA",
+            "balance" : 11000,
+            "interest-rate" : "2.3%",
+            "account-no": "1231234",
+            "sort-code": "233423",
+            "deposits" : [
+                { "date" : "01/01/2014", "amount": 2500 },
+                { "date" : "03/03/2015", "amount": 3000 }
+            ]
+        }
+    ]
+    },
+    "objectives": [
+        {
+            "name" : "Pay for holiday 2017",
+            "target-date" : "12/23/2017",
+            "accounts" : [ 1 ]
+        }
+    ],
+    "settings" : {
+        "currency" : "$"
+    }
+}

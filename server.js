@@ -6,9 +6,10 @@ var mongoose    = require('mongoose');
 var passport	= require('passport');
 var config      = require('./config/database'); // get db config file
 var User        = require('./app/models/user'); // get the mongoose model
+var SavingsAccount        = require('./app/models/savingsAccount'); // get the mongoose model
 var port        = process.env.PORT || 8080;
 var jwt         = require('jwt-simple');
- 
+
 // get our request parameters
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -97,7 +98,6 @@ apiRoutes.get('/memberinfo', passport.authenticate('jwt', { session: false}), fu
           return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
         } else {
           res.json({success: true, msg: 'Welcome in the member area ' + user.name + '!'});
-          console.log(user.name);
         }
     });
   } else {
@@ -105,6 +105,47 @@ apiRoutes.get('/memberinfo', passport.authenticate('jwt', { session: false}), fu
   }
 });
  
+// route to add savings account details
+apiRoutes.post('/addsavings', passport.authenticate('jwt', { session: false}), function(req, res) {
+    
+  var token = getToken(req.headers);
+  if (token) {
+    var decoded = jwt.decode(token, config.secret);
+    User.findOne({
+      name: decoded.name
+    }, function(err, user) {
+        if (err) throw err;
+ 
+        if (!user) {
+          return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
+        } else {
+
+            var newSavingsAccount = new SavingsAccount({
+                name : req.body.name,
+                balance : req.body.balance,
+                interestRate : req.body.interestRate,
+                accountNo: req.body.accountNo,
+                sortCode: req.body.sortCode
+            });
+
+            newSavingsAccount.save(function (err) {
+                if (err) {
+                    console.log(err);
+                    return res.json({success: false, msg: 'error saving Savings account.'});
+                } else {
+                res.json(newSavingsAccount);
+                }
+            });
+
+        }
+    });
+  } else {
+    return res.status(403).send({success: false, msg: 'No token provided.'});
+  }
+});
+ 
+
+
 getToken = function (headers) {
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(' ');
