@@ -6,10 +6,10 @@ var bcrypt = require('bcrypt');
  
 // set up a mongoose model
 var SavingsAccountSchema = new Schema({
-    name : { type: String, required: true },
+    email : { type: String, required: true },
     balance : { type: Number },
     interestRate : { type: String },
-    accountNo: { type: Number, unique: true },
+    accountNo: { type: Number },
     sortCode: { type: Number }
     /*,
     deposits : [

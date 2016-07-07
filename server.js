@@ -5,11 +5,11 @@ var morgan      = require('morgan');
 var mongoose    = require('mongoose');
 var passport	= require('passport');
 var config      = require('./config/database'); // get db config file
-var User        = require('./app/models/user'); // get the mongoose model
+var User        = require('./modules/user/server/models/user.server.models'); // get the mongoose model
 
 var port        = process.env.PORT || 8080;
 var jwt         = require('jwt-simple');
-var routes      = require('./config/routes');
+var user_routes      = require('./modules/user/server/routes/user.server.routes');
 var savings_routes      = require('./modules/savings_accounts/server/routes/savings_accounts.server.routes');
 
 
@@ -39,20 +39,27 @@ require('./config/passport')(passport);
 var apiRoutes = express.Router();
  
 apiRoutes.post('/signup', function(req, res) {
-  routes.signup(req,res);
+  user_routes.signup(req,res);
 });
 
 apiRoutes.post('/authenticate', function(req, res) {
-  routes.authenticate(req,res)
+  user_routes.authenticate(req,res)
 });
 
 apiRoutes.get('/memberinfo', passport.authenticate('jwt', { session: false}), function(req, res) {
-  routes.memberinfo(req,res);
+  user_routes.memberinfo(req,res);
 });
  
 apiRoutes.post('/addsavings', passport.authenticate('jwt', { session: false}), function(req, res) {
     savings_routes.addsavings(req,res);
 });
+
+apiRoutes.post('/addusersavings', function(req, res) {
+  user_routes.addusersavings(req,res)
+});
+
+
+
  
 getToken = function (headers) {
   if (headers && headers.authorization) {

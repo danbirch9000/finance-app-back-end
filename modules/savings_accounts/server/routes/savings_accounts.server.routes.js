@@ -5,7 +5,7 @@
 
 var jwt             = require('jwt-simple');
 var config          = require('../../../../config/database'); // get db config file
-var User            = require('../../../../models/user'); // get the mongoose model
+var User            = require('../../../../modules/user/server/models/user.server.models'); // get the mongoose model
 var SavingsAccount  = require('../models/savings_accounts.server.models'); // get the mongoose model
 
 exports.addsavings = function(req, res){
@@ -13,7 +13,7 @@ exports.addsavings = function(req, res){
   if (token) {
     var decoded = jwt.decode(token, config.secret);
     User.findOne({
-      name: decoded.name
+      email: decoded.email
     }, function(err, user) {
         if (err) throw err;
  
@@ -22,7 +22,7 @@ exports.addsavings = function(req, res){
         } else {
 
             var newSavingsAccount = new SavingsAccount({
-                name : req.body.name,
+                email : req.body.email,
                 balance : req.body.balance,
                 interestRate : req.body.interestRate,
                 accountNo: req.body.accountNo,
@@ -34,7 +34,14 @@ exports.addsavings = function(req, res){
                     console.log(err);
                     return res.json({success: false, msg: 'error saving Savings account.'});
                 } else {
-                res.json(newSavingsAccount);
+                    res.json(newSavingsAccount);
+
+                    SavingsAccount.find(function (err, savings) {
+                        if (err) return console.error(err);
+                        console.log(savings);
+                    })
+
+
                 }
             });
 
