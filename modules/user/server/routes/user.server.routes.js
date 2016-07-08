@@ -20,7 +20,11 @@ exports.memberinfo = function(req, res){
         if (!user) {
           return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
         } else {
-          res.json({success: true, msg: 'Welcome in the member area ' + user.email + '!'});
+
+          res.json({success: true, msg: 'Welcome in the member area ' + user.email + '!', User: user});
+
+
+          
         }
     });
   } else {
@@ -71,10 +75,6 @@ exports.signup = function(req, res){
   }
 }
 
-
-
-
-
 exports.addusersavings = function(req, res){
   var token = getToken(req.headers);
   if (token) {
@@ -88,46 +88,23 @@ exports.addusersavings = function(req, res){
           return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
         } else {
           
-          
-          
-                    console.log(user._id);
-                    
-                    User.findByIdAndUpdate(
-                        user._id,
-                        {$push: { "savings": {name: "test"}}},
-                        {safe: true, upsert: true, new : true},
-                        function(err, model) {
-                            console.log(err);
-                        }
-                    );
+            var newSavings = { "savings": { 
+              name: req.body.name,
+              interestRate: req.body.interestRate,
+              accountNo: req.body.accountNo,
+              sortCode: req.body.sortCode
+            } };
 
-                    res.json({success: true, msg: 'Done!'});
+            User.findByIdAndUpdate(
+                user._id,
+                { $push: newSavings },
+                { safe: true, upsert: true, new: true },
+                function(err, model) {
+                    console.log(err);
+                }
+            );
 
-                    // User.find(function (err, users) {
-                    //     if (err) return console.error(err);
-                    //     //console.log(users);
-                    // })
-          /*
-          
-        name: { type: String },
-        balance : { type: Number },
-        interestRate : { type: String },
-        accountNo: { type: Number },
-        sortCode: { type: Number },
-        deposits: [
-             { 
-                date : { type: Date }, 
-                amount: { type: Number, required: true }
-            }
-        ]
-          
-           */
-          
-          
-          
-          
-          
-          
+            res.json({success: true, msg: 'Done!'});
           
         }
     });
